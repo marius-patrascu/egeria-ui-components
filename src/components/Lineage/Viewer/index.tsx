@@ -1,24 +1,21 @@
-import React from "react";
-import { getComponent } from 'egeria-js-commons';
-import { NameSuggestions } from "./name-suggestions";
-import { TypesSuggestions } from "./types-suggestions";
-// import {IconButton, Tooltip} from "@mui/material";
-// import HelpIcon from '@mui/icons-material/Help';
-import { authHeaderWithContentType, egeriaFetch } from 'egeria-js-commons';
+import React from 'react';
+import { NameSuggestions } from './name-suggestions';
+import { TypesSuggestions } from './types-suggestions';
+import { authHeaderWithContentType, egeriaFetch, getComponent } from '@lfai/egeria-js-commons';
 
 import { Button } from '@mantine/core';
 
-// import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Props {
 }
 
 interface State {
   data: any;
-  isLoading: Boolean;
+  isLoading: boolean;
   inputBoxes: Array<any>;
   numberOfBoxes: number;
 }
@@ -43,17 +40,17 @@ class LineageViewer extends React.Component<Props, State> {
   }
 
   addMoreOptions() {
-    let typeId = "type-name-add-more-" + this.state.numberOfBoxes;
-    let nameId = "name-add-more-" + this.state.numberOfBoxes;
-    let inputBoxes = this.state.inputBoxes;
+    const typeId = 'type-name-add-more-' + this.state.numberOfBoxes;
+    const nameId = 'name-add-more-' + this.state.numberOfBoxes;
+    const inputBoxes = this.state.inputBoxes;
 
-    let div =
+    const div =
       <div className="content flex row">
         <div className="m5 flex column">
-          <TypesSuggestions itemId={typeId} searchedItem={false} />
+          <TypesSuggestions item-id={typeId} searched-item={false} />
         </div>
         <div className="m5 flex column">
-          <NameSuggestions itemId={nameId} searchedItem={false} />
+          <NameSuggestions item-id={nameId} searched-item={false} />
         </div>
       </div>;
 
@@ -67,7 +64,7 @@ class LineageViewer extends React.Component<Props, State> {
   }
 
   removeMoreOptions() {
-    let currentInputBoxes = this.state.inputBoxes;
+    const currentInputBoxes = this.state.inputBoxes;
     currentInputBoxes.pop();
     this.setState({
       inputBoxes: currentInputBoxes,
@@ -83,13 +80,13 @@ class LineageViewer extends React.Component<Props, State> {
     const relatedType: any = getComponent('#type-name-related');
     const relatedName: any = getComponent('#name-related');
 
-    let nodeType = combobox.value
-    let name = namebox.value;
-    let relTypeInfo = relatedType.value;
-    let relNameInfo = relatedName.value;
-    let body = this.getSearchBody(relNameInfo, relTypeInfo, name, nodeType);
+    const nodeType = combobox.value
+    const name = namebox.value;
+    const relTypeInfo = relatedType.value;
+    const relNameInfo = relatedName.value;
+    const body = this.getSearchBody(relNameInfo, relTypeInfo, name, nodeType);
 
-    let url = `${process.env.REACT_APP_API_URL}/api/lineage/entities/search`;
+    const url = `${process.env.REACT_APP_API_URL}/api/lineage/entities/search`;
 
     this.setState({
       isLoading: true
@@ -111,13 +108,13 @@ class LineageViewer extends React.Component<Props, State> {
   }
 
   private getSearchBody(relNameInfo: string, relTypeInfo: string, name: string, nodeType: string) {
-    let firstRelatedNode = {
-      name: relNameInfo ? relNameInfo : "",
-      type: relTypeInfo ? relTypeInfo : ""
+    const firstRelatedNode = {
+      name: relNameInfo ? relNameInfo : '',
+      type: relTypeInfo ? relTypeInfo : ''
     }
 
-    let relatedNodes = [];
-    if (firstRelatedNode.type !== undefined && firstRelatedNode.type !== null && firstRelatedNode.type !== "") {
+    const relatedNodes = [];
+    if (firstRelatedNode.type !== undefined && firstRelatedNode.type !== null && firstRelatedNode.type !== '') {
       relatedNodes.push(firstRelatedNode);
     }
     this.getRelatedNodes(relatedNodes);
@@ -135,9 +132,9 @@ class LineageViewer extends React.Component<Props, State> {
     for (let i = 0; i < this.state.numberOfBoxes; i++) {
       const component: any = getComponent('#type-name-add-more-' + i);
       const relatedName22: any = getComponent('#name-add-more-' + i);
-      let localNodeInfo = {
-        name: "",
-        type: ""
+      const localNodeInfo = {
+        name: '',
+        type: ''
       }
       if (component !== null) {
         localNodeInfo.type = component.value
@@ -145,20 +142,14 @@ class LineageViewer extends React.Component<Props, State> {
       if (relatedName22 !== null) {
         localNodeInfo.name = relatedName22.value
       }
-      if (localNodeInfo.type !== undefined && localNodeInfo.type !== "") {
+      if (localNodeInfo.type !== undefined && localNodeInfo.type !== '') {
         relatedNodes.push(localNodeInfo);
       }
     }
   }
 
   render() {
-    const { data, isLoading } = this.state;
-
-    const columnDefs = [
-      { field: 'displayName' }, // <a href="${process.env.REACT_APP_ROOT_PATH}/assets/${rowData.item.guid}/details" target="_blank">${itemName(rowData.item)}</a>
-      { field: 'nodeType' },
-      { field: 'qualifiedName' } // <QualifiedName qualified={rowData.item.qualifiedName} />,
-    ];
+    const { isLoading } = this.state;
 
     return (
       <div className={`flex-column${isLoading ? ' is-loading' : ''}`}>
@@ -182,19 +173,19 @@ class LineageViewer extends React.Component<Props, State> {
 
           <div className="content flex row">
             <div className="m5 flex-column">
-              <TypesSuggestions itemId="type-name-looking" searchedItem={true} />
+              <TypesSuggestions item-id="type-name-looking" searched-item={true} />
             </div>
             <div className="m5 flex-column">
-              <NameSuggestions itemId="name-looking" searchedItem={true} />
+              <NameSuggestions item-id="name-looking" searched-item={true} />
             </div>
           </div>
 
           <div className="content flex row">
             <div className="m5 flex-column">
-              <TypesSuggestions itemId="type-name-related" searchedItem={false} />
+              <TypesSuggestions item-id="type-name-related" searched-item={false} />
             </div>
             <div className="m5 flex-column">
-              <NameSuggestions itemId="name-related" searchedItem={false} />
+              <NameSuggestions item-id="name-related" searched-item={false} />
             </div>
           </div>
 

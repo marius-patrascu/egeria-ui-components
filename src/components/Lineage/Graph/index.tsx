@@ -1,12 +1,12 @@
 import { Modal, LoadingOverlay, Tabs } from '@mantine/core';
-import { egeriaFetch, authHeader } from 'egeria-js-commons';
+import { egeriaFetch, authHeader } from '@lfai/egeria-js-commons';
 
 import {
   HappiGraph,
   HappiGraphActions
-} from 'happi-graph';
+} from '@lfai/happi-graph';
 
-import 'happi-graph/src/components/HappiGraph/happi-graph.scss';
+import '@lfai/happi-graph/src/components/HappiGraph/happi-graph.scss';
 
 import './index.scss';
 
@@ -29,7 +29,7 @@ interface Props {
   apiUrl: any;
   guid: any;
   lineageType: any;
-  navigateTo: Function;
+  navigateTo: any;
 }
 
 const getIndexOfLineage = (lineageType?: string) => {
@@ -103,9 +103,9 @@ export function EgeriaLineageGraph(props: Props) {
           <Tabs.Tab label={LINEAGE.END_TO_END}>
             { loading && <div style={{height: '100%', position: 'relative'}}><LoadingOverlay visible/></div> }
             { !loading && <HappiGraph rawData={{...rawData}}
-                          algorithm={"VISJS"}
+                          algorithm={'VISJS'}
                           debug={false}
-                          graphDirection={"HORIZONTAL"}
+                          graphDirection={'HORIZONTAL'}
                           selectedNodeId={guid}
                           actions={<HappiGraphActions rawData={{...rawData}}/>}
                           onNodeClick={(d: any) => { setSelectedNodeData(d); setOpened(true); }} /> }
@@ -113,9 +113,9 @@ export function EgeriaLineageGraph(props: Props) {
           <Tabs.Tab label={LINEAGE.VERTICAL_LINEAGE}>
           { loading && <div style={{height: '100%', position: 'relative'}}><LoadingOverlay visible/></div> }
           { !loading && <HappiGraph rawData={{...rawData}}
-                          algorithm={"ELK"}
+                          algorithm={'ELK'}
                           debug={false}
-                          graphDirection={"VERTICAL"}
+                          graphDirection={'VERTICAL'}
                           selectedNodeId={guid}
                           actions={<HappiGraphActions rawData={{...rawData}}/>}
                           onNodeClick={(d: any) => { setSelectedNodeData(d); setOpened(true); }} /> }
@@ -123,9 +123,9 @@ export function EgeriaLineageGraph(props: Props) {
           <Tabs.Tab label={LINEAGE.ULTIMATE_SOURCE}>
           { loading && <div style={{height: '100%', position: 'relative'}}><LoadingOverlay visible/></div> }
           { !loading && <HappiGraph rawData={{...rawData}}
-                          algorithm={"VISJS"}
+                          algorithm={'VISJS'}
                           debug={false}
-                          graphDirection={"HORIZONTAL"}
+                          graphDirection={'HORIZONTAL'}
                           selectedNodeId={guid}
                           actions={<HappiGraphActions rawData={{...rawData}}/>}
                           onNodeClick={(d: any) => { setSelectedNodeData(d); setOpened(true); }} /> }
@@ -133,9 +133,9 @@ export function EgeriaLineageGraph(props: Props) {
           <Tabs.Tab label={LINEAGE.ULTIMATE_DESTINATION}>
           { loading && <div style={{height: '100%', position: 'relative'}}><LoadingOverlay visible/></div> }
           { !loading && <HappiGraph rawData={{...rawData}}
-                          algorithm={"VISJS"}
+                          algorithm={'VISJS'}
                           debug={false}
-                          graphDirection={"HORIZONTAL"}
+                          graphDirection={'HORIZONTAL'}
                           selectedNodeId={guid}
                           actions={<HappiGraphActions rawData={{...rawData}}/>}
                           onNodeClick={(d: any) => { setSelectedNodeData(d); setOpened(true); }} /> }

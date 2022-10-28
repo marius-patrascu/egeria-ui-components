@@ -1,4 +1,4 @@
-import { getIconByGroup } from 'egeria-js-commons';
+import { getIconByGroup } from '@lfai/egeria-js-commons';
 const itemDescription = (item) => {
     if (item.properties.description && item.properties.description != null) {
         return item.properties.description;
@@ -22,8 +22,8 @@ const itemName = (item) => {
     }
 };
 const parseQualifiedName = (str) => {
-    let regexpNames = /\((?<key>\w+)\)=(?<value>[a-zA-Z0-9_ ]+)/mg;
-    let response = [];
+    const regexpNames = /\((?<key>\w+)\)=(?<value>[a-zA-Z0-9_ ]+)/mg;
+    const response = [];
     let match = regexpNames.exec(str);
     do {
         if (!match || !match.groups) {
