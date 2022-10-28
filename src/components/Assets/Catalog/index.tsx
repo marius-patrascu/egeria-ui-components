@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Checkbox, TextInput, MultiSelect, Button, LoadingOverlay } from '@mantine/core';
+import { Checkbox, TextInput, MultiSelect, Button, LoadingOverlay, Dialog, Text } from '@mantine/core';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import { AgGridReact } from 'ag-grid-react';
@@ -49,6 +49,14 @@ export function EgeriaAssetCatalog(props: Props) {
     isLoading: false,
     typesData: [...emptyTypesData, ...queryParams.types]
   } as any);
+
+  const [dialogInfo, setErrorDialogInfo] = useState(
+      {
+        isError: false,
+        errorMessage: ""
+      } as any
+  );
+
 
   const [form, setForm] = useState({
     ...emptyForm,
@@ -146,10 +154,38 @@ export function EgeriaAssetCatalog(props: Props) {
     queryData();
   }, [searchParams]);
 
+
+  const areParamsValid = ()  => {
+    let query: string = form.q
+    if (query.length < 3) {
+      setErrorDialogInfo({
+        isError :true,
+        errorMessage : "The query must be at least 3 characters long"
+      });
+      return true;
+    }
+    let types : Array<string> = form.types;
+    if (!types || types.length === 0) {
+      setErrorDialogInfo({
+        isError :true,
+        errorMessage : "You must select at least one type"
+      })
+      return true;
+    }
+    return false;
+  }
+
   /*
    * Submit handler for the main form.
    */
   const submit = () => {
+
+    if (!areParamsValid() && dialogInfo.isError) {
+      setErrorDialogInfo({
+        isError :false,
+        errorMessage : ""
+      })
+    }
     setSearchParams(form);
   };
 
@@ -192,11 +228,19 @@ export function EgeriaAssetCatalog(props: Props) {
     <div style={{ display: 'flex', alignItems: 'stretch', flexDirection: 'column', position: 'relative', height: '100%', }}>
       <LoadingOverlay visible={rowData.isLoading || typesData.isLoading} />
 
+      <Dialog opened={dialogInfo.isError}>
+        <Text>
+          {dialogInfo.errorMessage}
+        </Text>
+        <Button onClick={() => setErrorDialogInfo(false)}>Close</Button>
+      </Dialog>
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10}}>
         <TextInput mr="xl"
                    style={{minWidth: 180}}
                    placeholder="Search"
                    value={form.q}
+                   minLength={2}
                    onKeyPress={handleEnterPress}
                    onChange={(event: any) => setForm({...form, q: event.currentTarget.value})} />
 
@@ -220,6 +264,7 @@ export function EgeriaAssetCatalog(props: Props) {
         <Button onClick={() => submit()}>
           Search
         </Button>
+
       </div>
 
       <div className="ag-theme-alpine" style={{width: '100%', height: '100%'}}>
