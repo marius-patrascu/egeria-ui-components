@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
-import { Checkbox, TextInput, MultiSelect, Button, LoadingOverlay } from '@mantine/core';
+import { Checkbox, TextInput, MultiSelect, Button, LoadingOverlay, Alert } from '@mantine/core';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -17,6 +17,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import QualifiedName from './qualified-name';
 import DisplayNameCellRenderer from './displayNameCellRenderer';
 import { ASSET_CATALOG_PATH, PAGE_SIZE_INCREASE_VALUE, getQueryParams, getQueryParamsPath, fetchTypes, fetchRawData } from '@lfai/egeria-js-commons';
+import { AlertCircle } from 'tabler-icons-react';
 /**
  * Initial empty form value.
  */
@@ -39,6 +40,10 @@ export function EgeriaAssetCatalog(props) {
     const [typesData, setTypesData] = useState({
         isLoading: false,
         typesData: [...emptyTypesData, ...queryParams.types]
+    });
+    const [searchValidationInfo, setErrorSearchValidationInfo] = useState({
+        isError: false,
+        errorMessage: ''
     });
     const [form, setForm] = useState(Object.assign(Object.assign({}, emptyForm), queryParams));
     const [rowData, setRowData] = useState({
@@ -114,11 +119,38 @@ export function EgeriaAssetCatalog(props) {
         });
         queryData();
     }, [searchParams]);
+    const areParamsValid = () => {
+        const query = form.q;
+        if (query.length < 3) {
+            setErrorSearchValidationInfo({
+                isError: true,
+                errorMessage: 'The query must be at least 3 characters long'
+            });
+            return false;
+        }
+        const types = form.types;
+        if (!types || types.length === 0) {
+            setErrorSearchValidationInfo({
+                isError: true,
+                errorMessage: 'You must select at least one type'
+            });
+            return false;
+        }
+        return true;
+    };
     /*
      * Submit handler for the main form.
      */
     const submit = () => {
-        setSearchParams(form);
+        if (areParamsValid() && searchValidationInfo.isError) {
+            setErrorSearchValidationInfo({
+                isError: false,
+                errorMessage: ''
+            });
+        }
+        if (areParamsValid()) {
+            setSearchParams(form);
+        }
     };
     /*
      * Submit handler for the main form on ENTER keypress.
@@ -146,5 +178,6 @@ export function EgeriaAssetCatalog(props) {
         const queryParams = getQueryParamsPath(formData);
         navigate(`${path}${queryParams.length ? `?${queryParams.join('&')}` : ''}`);
     };
-    return (_jsx(_Fragment, { children: _jsxs("div", Object.assign({ style: { display: 'flex', alignItems: 'stretch', flexDirection: 'column', position: 'relative', height: '100%', } }, { children: [_jsx(LoadingOverlay, { visible: rowData.isLoading || typesData.isLoading }), _jsxs("div", Object.assign({ style: { display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 } }, { children: [_jsx(TextInput, { mr: "xl", style: { minWidth: 180 }, placeholder: "Search", value: form.q, onKeyPress: handleEnterPress, onChange: (event) => setForm(Object.assign(Object.assign({}, form), { q: event.currentTarget.value })) }), _jsx(MultiSelect, { mr: "xl", style: { minWidth: 230 }, data: typesData.typesData, value: form.types, placeholder: "Types", onChange: (value) => setForm(Object.assign(Object.assign({}, form), { types: [...value] })) }), _jsx(Checkbox, { mr: "xl", label: 'Exact match', checked: form.exactMatch, onChange: (event) => setForm(Object.assign(Object.assign({}, form), { exactMatch: event.currentTarget.checked })) }), _jsx(Checkbox, { mr: "xl", label: 'Case sensitive', checked: form.caseSensitive, onChange: (event) => setForm(Object.assign(Object.assign({}, form), { caseSensitive: event.currentTarget.checked })) }), _jsx(Button, Object.assign({ onClick: () => submit() }, { children: "Search" }))] })), _jsx("div", Object.assign({ className: "ag-theme-alpine", style: { width: '100%', height: '100%' } }, { children: _jsx(AgGridReact, { gridOptions: gridOptions, rowData: rowData.rowData }) })), _jsx("div", { children: _jsx(Button, Object.assign({ size: "xs", compact: true, fullWidth: true, onClick: () => loadMore(), style: { marginBottom: 1, marginTop: 10 } }, { children: "Load more..." })) })] })) }));
+    return (_jsx(_Fragment, { children: _jsxs("div", Object.assign({ style: { display: 'flex', alignItems: 'stretch', flexDirection: 'column', position: 'relative', height: '100%', } }, { children: [_jsx(LoadingOverlay, { visible: rowData.isLoading || typesData.isLoading }), _jsxs("div", Object.assign({ style: { display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 } }, { children: [_jsx(TextInput, { mr: "xl", style: { minWidth: 180 }, placeholder: "Search", value: form.q, minLength: 2, onKeyPress: handleEnterPress, onChange: (event) => setForm(Object.assign(Object.assign({}, form), { q: event.currentTarget.value })) }), _jsx(MultiSelect, { mr: "xl", style: { minWidth: 230 }, data: typesData.typesData, value: form.types, placeholder: "Types", onChange: (value) => setForm(Object.assign(Object.assign({}, form), { types: [...value] })) }), _jsx(Checkbox, { mr: "xl", label: 'Exact match', checked: form.exactMatch, onChange: (event) => setForm(Object.assign(Object.assign({}, form), { exactMatch: event.currentTarget.checked })) }), _jsx(Checkbox, { mr: "xl", label: 'Case sensitive', checked: form.caseSensitive, onChange: (event) => setForm(Object.assign(Object.assign({}, form), { caseSensitive: event.currentTarget.checked })) }), _jsx(Button, Object.assign({ onClick: () => submit() }, { children: "Search" }))] })), _jsx("div", { children: searchValidationInfo.isError &&
+                        _jsx(Alert, Object.assign({ icon: _jsx(AlertCircle, { size: 16 }), color: "red" }, { children: _jsx("p", { children: searchValidationInfo.errorMessage }) })) }), _jsx("div", Object.assign({ className: "ag-theme-alpine", style: { width: '100%', height: '100%' } }, { children: _jsx(AgGridReact, { gridOptions: gridOptions, rowData: rowData.rowData }) })), _jsx("div", { children: _jsx(Button, Object.assign({ size: "xs", compact: true, fullWidth: true, onClick: () => loadMore(), style: { marginBottom: 1, marginTop: 10 } }, { children: "Load more..." })) })] })) }));
 }
